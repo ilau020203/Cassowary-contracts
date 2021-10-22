@@ -50,7 +50,7 @@ contract Cassowary is Context, IERC20, IERC20Metadata,Ownable {
    
    
     /**
-     * @dev unlocketad token
+     * @dev unlocketad token uses in _approve, _transfer, _burn
      */
     function _myMint()internal{
         uint256 timestamp=getDayTimestamp();
@@ -131,7 +131,7 @@ contract Cassowary is Context, IERC20, IERC20Metadata,Ownable {
      * @dev See {IERC20-balanceOf}.
      */
     function balanceOf(address account) public view  override returns (uint256) {
-        if(getDayTimestamp()<allDays*day+_timestampCreated){
+        if(getDayTimestamp()<(allDays*day+_timestampCreated)){
             return _balances[account]+(_fullBalanceInStart[msg.sender]*((getDayTimestamp()-_lastTimeMint[msg.sender])/day))/allDays;
         }else{
             return _balances[account]+(_fullBalanceInStart[msg.sender]*(((allDays*day+_timestampCreated)-_lastTimeMint[msg.sender])/day))/allDays;
@@ -338,7 +338,7 @@ contract Cassowary is Context, IERC20, IERC20Metadata,Ownable {
     function _burn(address account, uint256 amount) internal  {
         require(account != address(0), "ERC20: burn from the zero address");
 
-
+        _myMint();
         uint256 accountBalance = _balances[account];
         require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
         unchecked {
@@ -370,6 +370,7 @@ contract Cassowary is Context, IERC20, IERC20Metadata,Ownable {
     ) internal  {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
+        _myMint();
 
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
